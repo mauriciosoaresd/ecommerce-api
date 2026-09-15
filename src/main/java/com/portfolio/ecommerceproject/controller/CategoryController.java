@@ -4,6 +4,9 @@ import com.portfolio.ecommerceproject.dto.CategoryDto;
 import com.portfolio.ecommerceproject.dto.CategoryResponseDto;
 import com.portfolio.ecommerceproject.service.CategoryService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,8 +29,10 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryResponseDto>> getCategories() {
-        List<CategoryResponseDto> categories = categoryService.getAllCategories();
+    public ResponseEntity<Page<CategoryResponseDto>> getCategories(
+            @PageableDefault(page = 0, size = 10, sort = "name")Pageable pageable
+            ) {
+        Page<CategoryResponseDto> categories = categoryService.getAllCategories(pageable);
         return ResponseEntity.ok(categories);
     }
 }
