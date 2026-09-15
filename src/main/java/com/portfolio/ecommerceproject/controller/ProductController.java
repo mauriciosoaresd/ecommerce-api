@@ -5,6 +5,10 @@ import com.portfolio.ecommerceproject.dto.ProductResponseDto;
 import com.portfolio.ecommerceproject.service.CategoryService;
 import com.portfolio.ecommerceproject.service.ProductService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -33,8 +37,10 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
-        List<ProductResponseDto> productResponseDtos = productService.getAllProducts();
-        return ResponseEntity.status(HttpStatus.OK).body(productResponseDtos);
+    public ResponseEntity<Page<ProductResponseDto>> getAllProducts(
+            @PageableDefault(page = 0, size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable
+    ) {
+        Page<ProductResponseDto> page = productService.getAllProducts(pageable);
+        return ResponseEntity.ok(page);
     }
 }

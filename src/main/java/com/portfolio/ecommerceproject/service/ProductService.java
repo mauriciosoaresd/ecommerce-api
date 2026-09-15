@@ -8,6 +8,8 @@ import com.portfolio.ecommerceproject.dto.CategoryResponseDto;
 import com.portfolio.ecommerceproject.dto.ProductDto;
 import com.portfolio.ecommerceproject.dto.ProductResponseDto;
 import com.portfolio.ecommerceproject.service.exception.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,11 +43,9 @@ public class ProductService {
     }
 
     @Transactional
-    public List<ProductResponseDto> getAllProducts(){
-        return productRepository.findAll()
-                .stream()
-                .map(product -> productToDto(product))
-                .toList();
+    public Page<ProductResponseDto> getAllProducts(Pageable pageable) {
+        return productRepository.findAll(pageable)
+                .map(product -> productToDto(product));
     }
 
     private ProductResponseDto productToDto(Product product) {

@@ -4,6 +4,8 @@ import com.portfolio.ecommerceproject.domain.model.Category;
 import com.portfolio.ecommerceproject.domain.repository.CategoryRepository;
 import com.portfolio.ecommerceproject.dto.CategoryDto;
 import com.portfolio.ecommerceproject.dto.CategoryResponseDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,9 +29,8 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public List<CategoryResponseDto> getAllCategories() {
-        return categoryRepository.findAll().stream()
-                .map(c -> new CategoryResponseDto(c.getId(), c.getName()))
-                .toList();
+    public Page<CategoryResponseDto> getAllCategories(Pageable pageable) {
+        return categoryRepository.findAll(pageable)
+                .map(c -> new CategoryResponseDto(c.getId(), c.getName()));
     }
 }
