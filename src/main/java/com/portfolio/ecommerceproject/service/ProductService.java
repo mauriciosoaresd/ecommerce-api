@@ -7,6 +7,7 @@ import com.portfolio.ecommerceproject.domain.repository.ProductRepository;
 import com.portfolio.ecommerceproject.dto.CategoryResponseDto;
 import com.portfolio.ecommerceproject.dto.ProductDto;
 import com.portfolio.ecommerceproject.dto.ProductResponseDto;
+import com.portfolio.ecommerceproject.service.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +26,7 @@ public class ProductService {
     @Transactional
     public ProductResponseDto createProduct(ProductDto productDto) {
         Category category = categoryRepository.findById(productDto.categoryId())
-                .orElseThrow(() -> new IllegalArgumentException("Category not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
         Product product = new Product();
         product.setName(productDto.name());
