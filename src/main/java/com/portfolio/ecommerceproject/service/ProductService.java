@@ -44,9 +44,39 @@ public class ProductService {
         return productMapper.toDto(savedProduct);
     }
 
-    @Transactional
-    public Page<ProductResponseDto> getAllProducts(Pageable pageable) {
-        return productRepository.findAll(pageable)
+    @Transactional(readOnly = true)
+    public Page<ProductResponseDto> getAllProducts(String name, Long categoryId, Pageable pageable) {
+        return productRepository.filterSearch(name, categoryId, pageable)
                 .map(product -> productMapper.toDto(product));
+    }
+
+    @Transactional(readOnly = true)
+    public ProductResponseDto findProductById(Long id) {
+        Product product = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+
+        return productMapper.toDto(product);
+    }
+
+    @Transactional
+    public ProductResponseDto  updateProductById(Long id, ProductDto productDto) {
+        Product product = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+        Category category = categoryRepository.findById(productDto.categoryId()).orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+
+        product.setName(productDto.name());
+        product.setDescription(productDto.description());
+        product.setPrice(productDto.price());
+        product.setQuantity(productDto.quantity());
+        product.setCategory(category);
+
+        Product updatedProduct = productRepository.save(product);
+        return productMapper.toDto(updatedProduct);
+    }
+
+    @Transactional
+    public void deleteProductById(Long id) {
+        if(!productRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Product not found");
+        }
+        productRepository.deleteById(id);
     }
 }
