@@ -6,6 +6,7 @@ import com.portfolio.ecommerceproject.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -48,7 +49,7 @@ public class CategoryController {
     @Operation(summary = "List all categories paginated", description = "Returns paginated categories list")
     @GetMapping
     public ResponseEntity<Page<CategoryResponseDto>> getCategories(
-            @PageableDefault(page = 0, size = 10, sort = "name")Pageable pageable
+            @ParameterObject  @PageableDefault(page = 0, size = 10, sort = "name")Pageable pageable
             ) {
         Page<CategoryResponseDto> categories = categoryService.getAllCategories(pageable);
         return ResponseEntity.ok(categories);
