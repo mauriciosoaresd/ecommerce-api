@@ -5,6 +5,8 @@ import com.portfolio.ecommerceproject.service.exception.ResourceNotFoundExceptio
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,6 +49,20 @@ public class GlobalExceptionHandler {
                 "One or more arguments are invalid",
                 request.getRequestURI(),
                 errors
+        );
+        return ResponseEntity.status(status).body(error);
+    }
+
+    @ExceptionHandler({BadCredentialsException.class, UsernameNotFoundException.class})
+    public ResponseEntity<ResponseErrorDto> handleAuthenticationError(Exception e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+        ResponseErrorDto error = new ResponseErrorDto(
+                Instant.now(),
+                status.value(),
+                "Authentication fail",
+                "Email or password invalid",
+                request.getRequestURI(),
+                null
         );
         return ResponseEntity.status(status).body(error);
     }
