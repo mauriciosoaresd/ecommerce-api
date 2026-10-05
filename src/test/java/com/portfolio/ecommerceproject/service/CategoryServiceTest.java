@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -90,5 +91,30 @@ public class CategoryServiceTest {
             verify(categoryRepository, times(1)).findById(99L);
             verifyNoInteractions(categoryMapper);
         }
+    }
+
+    @Nested
+    @DisplayName("Category exclusion")
+    class DeleteCategory {
+        @Test
+        @DisplayName("Should delete a category by ID successfully")
+        void shouldDeleteCategorySuccessfully() {
+            when(categoryRepository.existsById(1L)).thenReturn(true);
+            doNothing().when(categoryRepository).deleteById(1L);
+
+            assertDoesNotThrow(() -> categoryService.deleteCategoryById(1L));
+
+            verify(categoryRepository, times(1)).existsById(1L);
+            verify(categoryRepository, times(1)).deleteById(1L);
+        }
+
+        @Test
+        @DisplayName("Should throw exception when deleting inexistent category ID")
+        void shouldThrowExceptionWhenDeletingInexistentCategoryId() {
+            when(categoryRepository.existsById(99L)).thenReturn(false);
+            assertThrows(ResourceNotFoundException.class, () -> categoryService.deleteCategoryById(99L));
+
+        verify(categoryRepository, times(1)).existsById(99L);
+        verify(categoryRepository, never()).deleteById(anyLong());}
     }
 }
