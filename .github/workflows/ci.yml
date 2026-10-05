@@ -9,22 +9,24 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-services:
-  postgres:
-    image: postgres:15-alpine
-    env:
-      POSTGRES_DB: ecommerce_test
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - 5432:5432
-    options: >-
-      --health-cmd pg_isready
-      --health-interval 10s
-      --health-timeout 5s
-      --health-retries 5
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: ecommerce_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
-      - name: Code Checkout
+      - name: Code checkout
         uses: actions/checkout@v4
 
       - name: JDK 21 Configuration
@@ -34,9 +36,9 @@ services:
           distribution: 'temurin'
           cache: maven
 
-      - name: Unit and Integration tests running
+      - name: Unit and Integratios tests running
         env:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/ecommerce_db
           SPRING_DATASOURCE_USERNAME: postgres
           SPRING_DATASOURCE_PASSWORD: postgres
-          run: mvn clean test -Dspring.profiles.active=test
+        run: mvn clean test -Dspring.profiles.active=test
