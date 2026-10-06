@@ -4,6 +4,7 @@ services:
   postgres-db:
     image: postgres:16-alpine
     container_name: ecommerce_db
+    restart: always
     ports:
       - "5432:5432"
     environment:
@@ -12,6 +13,27 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d ecommerce_db" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: .
+    container_name: ecommerce-api
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/ecommerce_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      API_SECURITY_TOKEN_SECRET: "4z6V9uA8yB2eE1hK4mN7qR0tW3zC5v8x1oP4sQ7rT0uW3zC5v8x1oP4sQ7rT0uW3"
 
 volumes:
   postgres_data:
